@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: smb-server
+  name: smb-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: smb-server
+  template:
+    metadata:
+      labels:
+        app: smb-server
+    spec:
+      volumes:
+        - name: media
+          hostPath:
+            path: /media/nfs/media
+      containers:
+        - image: dperson/samba
+          name: smb-server
+          ports:
+            - name: netbios
+              containerPort: 139
+            - name: smb
+              containerPort: 445
+          env:
+            - name: SHARE
+              value: "movies;/media/movies"
+            - name: SHARE2
+              value: "music;/media/music"
+            - name: SHARE3
+              value: "series;/media/series"
+            - name: SMB
+              value: "true"
+          volumeMounts:
+            - name: media
+              mountPath: /media
