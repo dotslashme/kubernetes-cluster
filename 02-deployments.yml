@@ -1,0 +1,133 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  namespace: default
+  name: traefik-ingress-controller
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  namespace: default
+  name: traefik
+  labels:
+    app: traefik
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: traefik
+  template:
+    metadata:
+      labels:
+        app: traefik
+    spec:
+      serviceAccountName: traefik-ingress-controller
+      containers:
+        - name: traefik
+          image: traefik:v2.2
+          args:
+            - --api.insecure
+            - --api.dashboard
+            - --accesslog
+            - --entrypoints.web.Address=:8000
+            - --entrypoints.websecure.Address=:4430
+            - --providers.kubernetescrd
+            - --certificatesresolvers.myresolver.acme.tlschallenge
+            - --certificatesresolvers.myresolver.acme.email=christian@dotslashme.com
+            - --certificatesresolvers.myresolver.acme.storage=acme.json
+          ports:
+            - name: web
+              containerPort: 8000
+            - name: websecure
+              containerPort: 4430
+            - name: admin
+              containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: redis
+  name: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - image: redis:6-alpine
+          name: redis
+          ports:
+            - name: redis
+              containerPort: 6379
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: postgres
+  name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      volumes:
+        - name: postgres-init
+          hostPath:
+            path: /home/cvelin/postgres/init
+        - name: postgres-data
+          hostPath:
+            path: /media/virtual/postgres-data
+      containers:
+        - image: postgres:12-alpine
+          name: postgres
+          ports:
+            - name: postgres
+              containerPort: 5432
+          volumeMounts:
+            - name: postgres-init
+              mountPath: /docker-entrypoint-initdb.d
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+          env:
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-credentials
+                  key: user
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: postgres-admin-credentials
+                  key: pass
+            - name: NEXTCLOUD_USER
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-db-credentials
+                  key: user
+            - name: NEXTCLOUD_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: nextcloud-db-credentials
+                  key: pass
+            - name: CONFLUENCE_USER
+              valueFrom:
+                secretKeyRef:
+                  name: confluence-db-credentials
+                  key: user
+            - name: CONFLUENCE_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: confluence-db-credentials
+                  key: pass
