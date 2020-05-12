@@ -1,0 +1,67 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: simpleingressroute
+  namespace: default
+spec:
+  entryPoints:
+    - web
+  routes:
+    - match: Host(`confluence.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: confluence
+          port: 8090
+      middlewares:
+        - name: redirectscheme
+    - match: Host(`nextcloud.dotslashme.com`) || Host(`storage.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: nextcloud
+          port: 80
+      middlewares:
+        - name: redirectscheme
+    - match: Host(`traefik.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: traefik
+          port: 8080
+      middlewares:
+        - name: redirectscheme
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingressroutetls
+  namespace: default
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`confluence.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: confluence
+          port: 8090
+      middlewares:
+        - name: compress
+        - name: headers
+    - match: Host(`nextcloud.dotslashme.com`) || Host(`storage.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: nextcloud
+          port: 80
+      middlewares:
+        - name: compress
+        - name: headers
+    - match: Host(`traefik.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: traefik
+          port: 8080
+      middlewares:
+        - name: auth
+        - name: compress
+        - name: headers
+  tls:
+    certResolver: myresolver
