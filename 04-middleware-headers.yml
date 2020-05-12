@@ -1,0 +1,13 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: headers
+spec:
+  headers:
+    browserXssFilter: true
+    contentSecurityPolicy: upgrade-insecure-requests
+    contentTypeNosniff: true
+    customFrameOptionsValue: SAMEORIGIN always
+    stsSeconds: 63072000
+    stsIncludeSubdomains: true
+    stsPreload: true
