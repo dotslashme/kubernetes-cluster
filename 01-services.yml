@@ -80,3 +80,15 @@ spec:
   selector:
     app: smb-server
   type: LoadBalancer
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plex
+spec:
+  ports:
+    - name: plex
+      protocol: TCP
+      port: 32400
+  selector:
+    app: plex
