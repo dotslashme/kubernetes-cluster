@@ -21,6 +21,13 @@ spec:
           port: 80
       middlewares:
         - name: redirectscheme
+    - match: Host(`plex.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: plex
+          port: 32400
+      middlewares:
+        - name: redirectscheme
     - match: Host(`traefik.dotslashme.com`)
       kind: Rule
       services:
@@ -51,6 +58,14 @@ spec:
       services:
         - name: nextcloud
           port: 80
+      middlewares:
+        - name: compress
+        - name: headers
+    - match: Host(`plex.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: plex
+          port: 32400
       middlewares:
         - name: compress
         - name: headers
