@@ -1,7 +1,15 @@
 # kubernetes-cluster
 My personal kubernetes cluster running on bare metal
 
+## Preparation
+
+- Initialize the control plane with `--pod-network-cidr=192.168.0.0/16`
+- Apply the Calico network addon
+- Install metal-lb
+- Apply metal-lb config (`kubectl apply -f https://raw.githubusercontent.com/dotslashme/kubernetes-cluster/master/00-metallb-layer2-config.yml`)
+
 ## Fast setup
+
 Run the following
 
 ```
