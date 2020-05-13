@@ -89,6 +89,7 @@ spec:
       containers:
         - name: plex
           image: plexinc/pms-docker
+          imagePullPolicy: Always
           env:
             - name: HOSTNAME
               value: plex.dotslashme.com

@@ -20,6 +20,7 @@ spec:
             path: /media/virtual/confluence-data
       containers:
         - image: atlassian/confluence-server:6.6.15
+          imagePullPolicy: Always
           name: confluence
           ports:
             - name: tomcat

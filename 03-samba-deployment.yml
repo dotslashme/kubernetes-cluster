@@ -20,6 +20,7 @@ spec:
             path: /media/nfs/media
       containers:
         - image: dperson/samba
+          imagePullPolicy: Always
           name: smb-server
           ports:
             - name: netbios

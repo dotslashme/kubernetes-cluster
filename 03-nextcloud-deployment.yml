@@ -21,6 +21,7 @@ spec:
       containers:
         - name: nextcloud
           image: nextcloud:18-apache
+          imagePullPolicy: Always
           ports:
             - name: web
               containerPort: 80

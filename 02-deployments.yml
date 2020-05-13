@@ -25,6 +25,7 @@ spec:
       containers:
         - name: traefik
           image: traefik:v2.2
+          imagePullPolicy: Always
           args:
             - --api.insecure
             - --api.dashboard
@@ -61,6 +62,7 @@ spec:
     spec:
       containers:
         - image: redis:6-alpine
+          imagePullPolicy: Always
           name: redis
           ports:
             - name: redis
@@ -91,6 +93,7 @@ spec:
             path: /media/virtual/postgres-data
       containers:
         - image: postgres:12-alpine
+          imagePullPolicy: Always
           name: postgres
           ports:
             - name: postgres
