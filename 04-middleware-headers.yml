@@ -7,7 +7,11 @@ spec:
     browserXssFilter: true
     contentSecurityPolicy: upgrade-insecure-requests
     contentTypeNosniff: true
-    customFrameOptionsValue: SAMEORIGIN always
+    customFrameOptionsValue: SAMEORIGIN
+    referrerPolicy: same-origin
     stsSeconds: 63072000
     stsIncludeSubdomains: true
     stsPreload: true
+    customResponseHeaders:
+      X-Powered-By: ""
+      Server: ""
