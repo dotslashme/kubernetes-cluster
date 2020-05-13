@@ -1,0 +1,113 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: config-pv
+  labels:
+    type: config-pv
+spec:
+  capacity:
+    storage: 300Gi
+  storageClassName: local-storage
+  persistentVolumeReclaimPolicy: Recycle
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /media/virtual/config-pv
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: transcode-pv
+  labels:
+    type: transcode-pv
+spec:
+  capacity:
+    storage: 30Gi
+  storageClassName: local-storage
+  persistentVolumeReclaimPolicy: Recycle
+  accessModes:
+    - ReadWriteOnce
+  hostPath:
+    path: /media/virtual/transcode-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: config-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 200Gi
+  selector:
+    matchLabels:
+      type: config-pv
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: transcode-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: local-storage
+  resources:
+    requests:
+      storage: 20Gi
+  selector:
+    matchLabels:
+      type: transcode-pv
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name:  plex
+  labels:
+    app: plex
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex
+  template:
+    metadata:
+      labels:
+        app: plex
+    spec:
+      volumes:
+        - name: media
+          hostPath:
+            path: /media/nfs/media
+        - name: config
+          persistentVolumeClaim:
+            claimName: config-pvc
+        - name: transcode
+          persistentVolumeClaim:
+            claimName: transcode-pvc
+      containers:
+        - name: plex
+          image: plexinc/pms-docker
+          env:
+            - name: HOSTNAME
+              value: plex.dotslashme.com
+            - name: ADVERTISE_IP
+              value: https://plex.dotslashme.com
+            - name: TZ
+              value: Europe/Stockholm
+            - name: PLEX_CLAIM
+              valueFrom:
+                secretKeyRef:
+                  name: plex-claim
+                  key: claim
+          ports:
+            - name: plex
+              containerPort: 32400
+          volumeMounts:
+            - name: media
+              mountPath: /data
+            - name: config
+              mountPath: /config
+            - name: transcode
+              mountPath: /transcode
