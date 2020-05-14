@@ -50,6 +50,11 @@ spec:
       services:
         - name: confluence
           port: 8090
+          sticky:
+            cookie:
+              httpOnly: true
+              secure: true
+              name: confluence
       middlewares:
         - name: compress
         - name: headers
@@ -58,6 +63,10 @@ spec:
       services:
         - name: nextcloud
           port: 80
+          sticky:
+            cookie:
+              secure: true
+              httpOnly: true
       middlewares:
         - name: compress
         - name: headers
@@ -66,6 +75,10 @@ spec:
       services:
         - name: plex
           port: 32400
+          sticky:
+            cookie:
+              secure: true
+              httpOnly: true
       middlewares:
         - name: compress
         - name: headers
@@ -74,6 +87,10 @@ spec:
       services:
         - name: traefik
           port: 8080
+          sticky:
+            cookie:
+              secure: true
+              httpOnly: true
       middlewares:
         - name: auth
         - name: compress
