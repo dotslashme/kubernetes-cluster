@@ -46,7 +46,7 @@ spec:
             - name: REDIS_HOST
               value: redis
             - name: TRUSTED_PROXIES
-              value: 192.168.0/16
+              value: 192.168.0.0/16
             - name: NEXTCLOUD_TRUSTED_DOMAINS
               value: nextcloud.dotslashme.com
             - name: NEXTCLOUD_TABLE_PREFIX
