@@ -1,3 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sysctl-configmap
+  labels:
+    app: smb-server
+data:
+  sysctl-config: |
+    net.inet.tcp.sendspace=262144
+    net.inet.tcp.recvspace=262144
+    net.inet.tcp.delayed_ack=0
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -18,6 +30,12 @@ spec:
         - name: media
           hostPath:
             path: /media/nfs/media
+        - name: sysctl-configmap-volume
+          configMap:
+            name: sysctl-configmap
+            items:
+              - key: sysctl-config
+                path: sysctl.conf
       containers:
         - image: dperson/samba
           imagePullPolicy: Always
@@ -34,8 +52,14 @@ spec:
               value: "music;/media/music"
             - name: SHARE3
               value: "series;/media/series"
+            - name: SHARE4
+              value: "download;/media/download"
             - name: SMB
               value: "true"
           volumeMounts:
             - name: media
               mountPath: /media
+            - name: sysctl-configmap-volume
+              mountPath: /etc/sysctl.conf
+              subPath: sysctl.conf
+

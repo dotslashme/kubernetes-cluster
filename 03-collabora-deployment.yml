@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: collabora
+  name: collabora
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: collabora
+  template:
+    metadata:
+      labels:
+        app: collabora
+    spec:
+      containers:
+        - image: collabora/code
+          imagePullPolicy: Always
+          name: collabora
+          ports:
+            - name: collabora
+              containerPort: 9980
+          env:
+            - name: domain
+              value: collabora\\.dotslashme\\.com
+            - name: server_name
+              value: collabora.dotslashme.com
+            - name: DONT_GEN_SSL_CERT
+              value: "true"
+            - name: cert_domain
+              value: collabora.dotslashme.com
+            - name: extra_params
+              value: "--o:ssl.enable=false --o:ssl.termination=true"
+            - name: username
+              valueFrom:
+                secretKeyRef:
+                  name: collabora-admin
+                  key: user
+            - name: password
+              valueFrom:
+                secretKeyRef:
+                  name: collabora-admin
+                  key: pass

@@ -20,7 +20,7 @@ spec:
             path: /media/virtual/nextcloud-data
       containers:
         - name: nextcloud
-          image: nextcloud:18-apache
+          image: nextcloud:19-apache
           imagePullPolicy: Always
           ports:
             - name: web

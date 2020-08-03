@@ -35,6 +35,20 @@ spec:
           port: 8080
       middlewares:
         - name: redirectscheme
+    - match: Host(`collabora.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: collabora
+          port: 9980
+      middlewares:
+        - name: redirectscheme
+    - match: Host(`kuub.me`)
+      kind: Rule
+      services:
+        - name: kuub
+          port: 80
+      middlewares:
+        - name: redirectscheme
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -95,5 +109,38 @@ spec:
         - name: auth
         - name: compress
         - name: headers
+    - match: Host(`collabora.dotslashme.com`)
+      kind: Rule
+      services:
+        - name: collabora
+          port: 9980
+          sticky:
+            cookie:
+              secure: true
+              httpOnly: true
+      middlewares:
+        - name: compress
+        - name: headers
+    - match: Host(`kuub.me`)
+      kind: Rule
+      services:
+        - name: kuub
+          port: 80
+          sticky:
+            cookie:
+              secure: true
+              httpOnly: true
+      middlewares:
+        - name: compress
+        - name: headers
   tls:
     certResolver: myresolver
+    domains:
+      - main: "nextcloud.dotslashme.com"
+        sans:
+          - "confluence.dotslashme.com"
+          - "storage.dotslashme.com"
+          - "plex.dotslashme.com"
+          - "traefik.dotslashme.com"
+          - "collabora.dotslashme.com"
+          - "kuub.me"

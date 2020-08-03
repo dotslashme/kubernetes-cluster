@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kuub
+  name: kuub
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kuub
+  template:
+    metadata:
+      labels:
+        app: kuub
+    spec:
+      containers:
+        - image: nginx:alpine
+          imagePullPolicy: Always
+          name: kuub
+          ports:
+            - name: kuub
+              containerPort: 80
